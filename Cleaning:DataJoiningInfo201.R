@@ -1,5 +1,4 @@
-###Hey, so not sure if I'm doing this right, but hoping you guys can see the code I made to clean the data :)###
-
+#Updated code! 
 
 library(tidyverse)
 library(eeptools)
