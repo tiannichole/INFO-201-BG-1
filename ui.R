@@ -34,7 +34,7 @@ ui <- fluidPage(
           a("click here!", href = "https://data.seattle.gov/Community/Seattle-Pet-Licenses/jguv-t9rb/about_data", target = "_blank"),
           style = "font-size: 16px;"),
        p("For the dataset from the IRS on zip codes and income ", 
-         a("click here!", href = "https://data.seattle.gov/Community/Seattle-Pet-Licenses/jguv-t9rb/about_data", target = "_blank"),
+         a("click here!", href = "https://www.irs.gov/statistics/soi-tax-stats-individual-income-tax-statistics-zip-code-data-soi", target = "_blank"),
          style = "font-size: 16px;"),
        br(),
        p("Limitations and Misrepresentation:", 
