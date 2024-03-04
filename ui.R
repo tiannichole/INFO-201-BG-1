@@ -87,39 +87,51 @@ ui <- fluidPage(
           style = "font-size: 18px;")
     ),
     
-    tabPanel("Viz 1 tab title",
+    tabPanel("idk yet",
              sidebarLayout(
                sidebarPanel(
-                 h2("Options for graph"),
+                 h2("Options"),
                  #TODO: Put inputs for modifying graph here
-               ),
+                 radioButtons(inputId="species", "Species:",
+                              c("Dogs" = "Dog",
+                                "Cats" = "Cat",
+                                "Goats" = "Goat",
+                                "Pigs" = "Pig")),
+                            ),
                mainPanel(
-                 h2("Vizualization 1 Title"),
-                 # plotlyOutput(outputId = "your_viz_1_output_id")
+                 # plotlyOutput(outputId = "vis1_plot")
+                 plotOutput(outputId = "pet_plot")
+                 
                )
              )
     ),
-    tabPanel("Viz 2 tab title",
+    tabPanel("Limitations of our data",
+             sidebarLayout(
+               sidebarPanel(
+                 h2("Percent of each in our dataset:"),
+                 #TODO: Put inputs for modifying graph here
+                 actionButton("button1", "Species"),
+                 actionButton("button2", "Socioeconomic Status"),
+                 actionButton("button3", "Year")
+               ),
+               mainPanel(
+                 # plotlyOutput(outputId = "your_viz_2_output_id")
+                 plotOutput(outputId = "vis2")
+               )
+             )
+    ),
+    tabPanel("Investigate our dataset!",
              sidebarLayout(
                sidebarPanel(
                  h2("Options for graph"),
                  #TODO: Put inputs for modifying graph here
+                 selectInput("x_variable", "Choose X-axis variable:", choices = colnames(pet_df)), 
+                 selectInput("y_variable", "Choose Y-axis variable:", choices = colnames(pet_df))
                ),
                mainPanel(
                  h2("Vizualization 2 Title"),
-                 # plotlyOutput(outputId = "your_viz_1_output_id")
-               )
-             )
-    ),
-    tabPanel("Viz 3 tab title",
-             sidebarLayout(
-               sidebarPanel(
-                 h2("Options for graph"),
-                 #TODO: Put inputs for modifying graph here
-               ),
-               mainPanel(
-                 h2("Vizualization 3 Title"),
-                 # plotlyOutput(outputId = "your_viz_1_output_id")
+                 # plotlyOutput(outputId = "your_viz_3_output_id")
+                 plotOutput(outputId = "plot3")
                )
              )
     ),
@@ -130,3 +142,18 @@ ui <- fluidPage(
     )
     
   )
+
+# tabPanel("Viz 3 tab title",
+#          sidebarLayout(
+#            sidebarPanel(
+#              h2("Options for graph"),
+#              #TODO: Put inputs for modifying graph here
+#            ),
+#            mainPanel(
+#              h2("Vizualization 3 Title"),
+#              # plotlyOutput(outputId = "your_viz_1_output_id")
+                
+
+#            )
+#          )
+# ),
