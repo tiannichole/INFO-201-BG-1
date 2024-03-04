@@ -15,14 +15,42 @@ server <- function(input, output, session){
   pet_df <- read_csv("pet_df.csv")
 
   ## add font styling to be consistent with overall ui
+  ## this does not work yet, i will come back to it later if we have enough time
   font_style <- theme(text = element_text(family = "Inconsolata", color = "black"))
   
   ###tab1###
   #SES 
   output$pet_plot <- renderPlot({
     ggplot(pet_df %>% filter(Species == input$species), aes(License.Issue.Date, Avg.AGI, colour = SES)) + 
-      geom_point() + font_style
+      geom_point() + labs(title = "idk yet", x = "whatever x will be", y = "Average AGI", color = "Socioeconomic Status") + font_style
   }, res = 96)
+  
+  ### TEST for count by SES
+  observe({
+    updateRadioButtons(session, "species", selected = "Dog")
+  })
+  
+  # Define the reactive expression
+  animal_sum_by_ses <- reactive({
+    pet_df %>%
+      filter(Species == input$species) %>%
+      group_by(SES) %>%
+      summarize(
+        Dog = sum(ifelse(Species == "Dog", 1, 0)),
+        Cat = sum(ifelse(Species == "Cat", 1, 0)),
+        Goat = sum(ifelse(Species == "Goat", 1, 0)),
+        Pig = sum(ifelse(Species == "Pig", 1, 0))
+      )
+  })
+  
+  # Render the plot
+  output$animal_sum_plot <- renderPlot({
+    ggplot(animal_sum_by_ses(), aes(x = SES)) +
+      geom_bar(stat = "identity") +
+      labs(title = "Number of Each Animal by SES", y = "Count", fill = "Species") +
+      theme_minimal() +
+      font_style
+  })
   
   # output$test_plot <- renderPlot({
   #  ggplot(pet_df, aes(fill=Species, y=count(Species), x=SES)) + 
