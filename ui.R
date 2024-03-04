@@ -100,7 +100,8 @@ ui <- fluidPage(
                         ),
                mainPanel(
                  # plotlyOutput(outputId = "vis1_plot")
-                 plotOutput(outputId = "pet_plot")
+                 plotOutput(outputId = "pet_plot"),
+                 plotOutput(outputId = "animal_sum_plot")
                )
              )
     ),
