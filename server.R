@@ -12,7 +12,7 @@ server <- function(input, output, session){
   
   ##read in data#
   library(readr)
-  pet_df <- read_csv("pet_df.csv")
+  pet_df <- read_csv("https://github.com/tiannichole/INFO-201-BG-1/raw/3f2904440f49bd9c62dcd2693a42d8acd5f70b45/pet_df.csv")
 
   ## add font styling to be consistent with overall ui
   ## this does not work yet, i will come back to it later if we have enough time
