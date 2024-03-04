@@ -15,7 +15,7 @@ ui <- fluidPage(
   ## OVERVIEW TAB INFO
   navbarPage("INFO 200 BG-1",
     tabPanel("Introduction",
-       h1("Seattle Pet Licenses and Income"),
+       h1("Pets, Money, and City Tradeoffs: An Analysis of Seattle’s Pet Licenses"),
        p("Research by Hannah Hinton, Nichole Tian, and Xiwen Wang"), 
        br(),
        img(src = "https://i.pinimg.com/originals/cc/d8/c2/ccd8c22894aaf6ffff0d4f36ae8edb92.jpg",
@@ -93,15 +93,14 @@ ui <- fluidPage(
                  h2("Options"),
                  #TODO: Put inputs for modifying graph here
                  radioButtons(inputId="species", "Species:",
-                              c("Dogs" = "Dog",
-                                "Cats" = "Cat",
-                                "Goats" = "Goat",
-                                "Pigs" = "Pig")),
-                            ),
+                        c("Dogs" = "Dog",
+                          "Cats" = "Cat",
+                          "Goats" = "Goat",
+                          "Pigs" = "Pig")),
+                        ),
                mainPanel(
                  # plotlyOutput(outputId = "vis1_plot")
                  plotOutput(outputId = "pet_plot")
-                 
                )
              )
     ),
@@ -136,24 +135,85 @@ ui <- fluidPage(
              )
     ),
     tabPanel("Conclusion",
-             h1("Some title"),
-             p("some conclusions")
+             h1("Our findings:"),
+             p("The following significant findings from the examination of 
+                Seattle's pet license data and its relationship to 
+                socioeconomic variables provide light on particular areas of 
+                the project's focus:", 
+                style = "font-size: 16px;"),
+             br(),
+             img(src = "https://i.pinimg.com/originals/02/a3/3d/02a33dfffae193dd9c206430245670ef.png",
+                 width = "300px",
+                 height = "300px"),
+             br(),
+             br(),
+             br(),
+             p("1. Income Gaps and Pet Ownership:", 
+                style = "font-size: 20px;"),
+             p("According to the data, there is a significant relationship 
+                in Seattle between pet ownership and wealth. Higher rates of 
+                pet licensing are typically found in higher income areas, 
+                indicating a possible relationship between pet ownership and 
+                socioeconomic standing. This observation underscores the 
+                impact of monetary assets on the inclination to become a pet 
+                owner and the ramifications for home dynamics across various 
+                social strata.", 
+                style = "font-size: 18px;"),
+             br(),
+             p("2. City Governance and Pet Licensing Practices:", 
+                style = "font-size: 20px;"),
+             p("Analyzing pet licensing data highlights how important city 
+                governance is to controlling and encouraging ethical pet 
+                ownership. The efficiency of the present licensing procedures 
+                and enforcement tools is called into doubt by differences 
+                in license renewal rates and the fabrication of pet ownership 
+                statistics. This realization highlights how crucial it is to 
+                have fair and open governance practices in order to guarantee 
+                legal compliance and advance the welfare of both dogs and 
+                their owners.", 
+                style = "font-size: 18px;"),
+             br(),
+             p("3. Education and Awareness:", 
+                style = "font-size: 20px;"),
+             p("The project emphasizes the importance of education and 
+                awareness campaigns in influencing the attitudes and behaviors 
+                associated with pet ownership. The necessity of focused 
+                communication initiatives is highlighted by the 
+                misrepresentation of pet ownership rates caused by variables 
+                including disparities in enforcement and ignorance of 
+                licensing requirements. Cities may improve the welfare of 
+                pets and their communities by raising public awareness of 
+                license requirements and the advantages of responsible pet 
+                ownership. This will also help to increase compliance and 
+                lessen inequities.", 
+                style = "font-size: 18px;"),
+             br(),
+             p("These revelations highlight the complex interplay among 
+                wealth, local government, and pet ownership. Cities like 
+                Seattle can foster a more equitable and welcoming environment 
+                for pet owners from all socioeconomic backgrounds by 
+                addressing inequities, enhancing governance procedures, and 
+                placing a high priority on awareness and education. Cities 
+                can create policies and programs that support responsible pet 
+                ownership and improve the quality of life for both pets and 
+                their human partners by doing ongoing research and working 
+                together with government agencies, community organizations, 
+                and pet owners.",
+                style = "font-size: 18px;"),
+             br(),
+             p("We believe in the future for Seattle in which people 
+                collaborate and come up with creative solutions to ensure that 
+                every pet owner practices responsible pet ownership, that 
+                every pet receives care and support, and that there is a 
+                vibrant, welcoming community for both pet owners and their 
+                animals.",
+                style = "font-size: 18px;"),
+             img(src = "https://gifdb.com/images/high/mochi-cat-sweet-cheek-kiss-rmtmm2ovw6xecuml.gif",
+                width = "400px",
+                height = "325px"),
+             p("Thank you for your interest in our project!",
+                style = "font-size: 20px;")
     )
     )
     
   )
-
-# tabPanel("Viz 3 tab title",
-#          sidebarLayout(
-#            sidebarPanel(
-#              h2("Options for graph"),
-#              #TODO: Put inputs for modifying graph here
-#            ),
-#            mainPanel(
-#              h2("Vizualization 3 Title"),
-#              # plotlyOutput(outputId = "your_viz_1_output_id")
-                
-
-#            )
-#          )
-# ),
