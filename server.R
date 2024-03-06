@@ -1,87 +1,49 @@
 library(tidyverse)
 library(lubridate)
-library(eeptools)
-library(shiny)
-library (shinyWidgets)
 library(ggplot2)
 library(plotly)
 library(data.table)
 library(dplyr)
+library(rsconnect)
+library(bslib)
+library(RColorBrewer)
+library(scales)
+
 
 server <- function(input, output, session){
   
   ##read in data#
   library(readr)
-  pet_df <- read_csv("https://github.com/tiannichole/INFO-201-BG-1/raw/3f2904440f49bd9c62dcd2693a42d8acd5f70b45/pet_df.csv")
-
+  pet_df <- read.csv("https://github.com/tiannichole/INFO-201-BG-1/blob/main/pet_df.csv?raw=true")
+  
+  
   ## add font styling to be consistent with overall ui
-  ## this does not work yet, i will come back to it later if we have enough time
   font_style <- theme(text = element_text(family = "Inconsolata", color = "black"))
   
   ###tab1###
   #SES 
-  output$pet_plot <- renderPlot({
-    ggplot(pet_df %>% filter(Species == input$species), aes(License.Issue.Date, Avg.AGI, colour = SES)) + 
-      geom_point() + labs(title = "idk yet", x = "whatever x will be", y = "Average AGI", color = "Socioeconomic Status") + font_style
-  }, res = 96)
+  pet_df$License.Issue.Date <- as.Date(pet_df$License.Issue.Date)
   
-  ### TEST for count by SES
-  observe({
-    updateRadioButtons(session, "species", selected = "Dog")
+  overall_min_AGI <- min(pet_df$Avg.AGI)
+  overall_max_AGI <- max(pet_df$Avg.AGI)
+  
+  output$plot1 <- renderPlot({
+    filtered_data <- pet_df %>%
+      filter(License.Issue.Date >= input$dateRange[1] & License.Issue.Date <= input$dateRange[2],
+             if (!is.null(input$speciesInput) && input$speciesInput != "All") Species == input$speciesInput else TRUE)
+    
+    ggplot(filtered_data, aes(x=License.Issue.Date, y=Avg.AGI, colour = Species)) + 
+      geom_point() + 
+      labs(
+        x = "License Issue Date",
+        y = "Average Annual Gross Income (by Zip Code)") +
+      scale_x_date(date_breaks = "6 month", date_labels = "%b %Y") +  # Adjust x-axis scale
+      ylim(overall_min_AGI, overall_max_AGI)  # Fix y-axis limits
   })
   
-  # Define the reactive expression
-  animal_sum_by_ses <- reactive({
-    pet_df %>%
-      filter(Species == input$species) %>%
-      group_by(SES) %>%
-      summarize(
-        Dog = sum(ifelse(Species == "Dog", 1, 0)),
-        Cat = sum(ifelse(Species == "Cat", 1, 0)),
-        Goat = sum(ifelse(Species == "Goat", 1, 0)),
-        Pig = sum(ifelse(Species == "Pig", 1, 0))
-      )
-  })
-  
-  # Render the plot
-  output$animal_sum_plot <- renderPlot({
-    ggplot(animal_sum_by_ses(), aes(x = SES)) +
-      geom_bar(stat = "identity") +
-      labs(title = "Number of Each Animal by SES", y = "Count", fill = "Species") +
-      theme_minimal() +
-      font_style
-  })
-  
-  # output$test_plot <- renderPlot({
-  #  ggplot(pet_df, aes(fill=Species, y=count(Species), x=SES)) + 
-  #     geom_bar(position="dodge", stat="identity")
-  # })
-  
-  ##tab2###
-  #countplot
-  counts <- reactive ({
-    pet_df%>%
-      filter(Species == input$species) %>%
-      count("Primary.Breed") %>%
-      mutate(percentage = (n / sum(n)) * 100)
-  })
-  
-  ##TEST##############
-  output$breed_plot <- renderPlot({
-    ggplot(aes(x=Primary.Breed, y=freq) ) +
-      geom_segment( aes(x=Primary.Breed ,xend=Primary.Breed, y=0, yend=freq), color="grey") +
-      geom_point(size=3, color="#69b3a2") +
-      coord_flip() +
-      theme(
-        panel.grid.minor.y = element_blank(),
-        panel.grid.major.y = element_blank(),
-        legend.position="none"
-      ) +
-      xlab("") + font_style 
-  })
   ###tab2###
   selected_graph <- reactiveVal(NULL)
-  # When a button is clicked, store the selected graph
+  
   observeEvent(input$button1, {
     selected_graph("graph1")
   })
@@ -94,7 +56,6 @@ server <- function(input, output, session){
     selected_graph("graph3")
   })
   
-  # Render the plot based on the selected graph
   output$vis2 <- renderPlot({
     if (is.null(selected_graph())) {
       return(NULL)
@@ -107,9 +68,14 @@ server <- function(input, output, session){
         count(Species)
       species_count <- species_count %>%
         mutate(percentage = (n / 14025) * 100)
-      ggplot(species_count, aes(x="Percent of each species in our dataset", y=percentage, fill=Species))+
+      plot <- ggplot(species_count, aes(x=" ", y=percentage, fill=Species))+
         geom_bar(width = 1, stat = "identity") +
-        labs(caption = "As you can see, our dataset mainly consists of dogs and cats") + font_style 
+        labs(x = "Percent of each species in our dataset", y = "Percentage", caption = "As you can see, our dataset mainly consists of dogs and cats") +
+        theme(text = element_text(family = "Inconsolata", color = "black"),
+              plot.caption.position = "plot",
+              plot.caption = element_text(hjust = 0))
+      
+      return(plot)
       
     } else if (selected_graph() == "graph2") {
       #input graph2 here
@@ -119,13 +85,16 @@ server <- function(input, output, session){
         count(SES, na.rm=TRUE)
       SES_count <- SES_count %>%
         mutate(percentage = (n / 14025) * 100)
-      ggplot(SES_count, aes(x="Percent of each Socioeconomic Status in our dataset 
-                            (proxied by Annual Gross Income)", y=percentage, fill=SES))+
+      plot <- ggplot(SES_count, aes(x=" ", y=percentage, fill=SES))+
         geom_bar(width = 1, stat = "identity") +
         scale_fill_discrete(name = "Annual Gross Income (AGI) Category") +
-        labs(caption = "As you can see, our dataset contains very few people who  
-         earn less than $50,000 annually. Subsequently, this sample
-         is likely biased towards people who can afford Pet Licenses") + font_style 
+        labs(x = "Percent of each Socioeconomic Status in our dataset 
+             (proxied by Annual Gross Income) ", y = "Percentage", caption = str_wrap(" For the SES category, 'Low' is under $50,000 AGI, 'Medium' is $50,000 - $100,000 AGI, and 'High' is over $100,000 AGI. As you can see, our dataset contains very few people who earn less than $50,000 annually. Subsequently, this sample is likely biased towards people who can afford Pet Licenses")) +
+        theme(text = element_text(family = "Inconsolata", color = "black"),
+              plot.caption.position = "plot",
+              plot.caption = element_text(hjust = 0))
+      
+      return(plot)
       
     } else if (selected_graph() == "graph3") {
       #input graph3 here
@@ -134,17 +103,63 @@ server <- function(input, output, session){
         count(Year)
       year_count <- year_count %>%
         mutate(percentage = (n / 14025) * 100)
-      ggplot(year_count, aes(x="Percent of each Year in our dataset", y=percentage, fill=Year))+
+      plot <- ggplot(year_count, aes(x="", y=percentage, fill=Year))+
         geom_bar(width = 1, stat = "identity") +
-        labs(caption = "As you can see, our dataset mainly consists of Pet License data from 2022.") + font_style 
+        labs(x = "Percent of each year in our dataset", y = "Percentage", caption = "As you can see, our dataset mainly consists of pet license data from 2022.") +
+        theme(text = element_text(family = "Inconsolata", color = "black"),
+              plot.caption.position = "plot",
+              plot.caption = element_text(hjust = 0))
+      
+      return(plot)
+      
     }
   })
   
   ###tab3###
-  output$plot3 <- renderPlot({
-    ggplot(pet_df, aes_string(x = input$x_variable, y = input$y_variable)) +
-      geom_point() +
-      labs(title = paste("Scatter Plot of", input$x_variable, "vs", input$y_variable)) + font_style 
+  tab3_df <- reactive({
+    pet_df %>%
+      filter(Species == input$species_var, SES == input$SES_var)
+  })
+  
+  output$vis3_plot <- renderPlot({
+    tab3_df_filtered <- tab3_df()
+    
+    breed_counts <- table(tab3_df_filtered$Primary.Breed)
+    total_count <- sum(breed_counts)
+    breed_proportions <- breed_counts / total_count
+    
+    #breeds with less than 1%
+    other_breeds <- names(breed_proportions[breed_proportions < 0.01])
+    
+    #creating the "other" category and putting breeds with less than 1% into it
+    tab3_df_filtered$Primary.Breed_Grouped <- ifelse(tab3_df_filtered$Primary.Breed %in% other_breeds, "Other (Species with less than 1% representation)", tab3_df_filtered$Primary.Breed)
+    
+    #recalculations
+    breed_counts_grouped <- table(tab3_df_filtered$Primary.Breed_Grouped)
+    breed_proportions_grouped <- breed_counts_grouped / sum(breed_counts_grouped)
+    
+    #df
+    breed_data <- data.frame(Breed = names(breed_proportions_grouped), Proportion = breed_proportions_grouped)
+    
+    #color stuff
+    nb.cols <- 30
+    mycolors <- colorRampPalette(brewer.pal(8,"Set1"))(nb.cols)
+    mycolors <- rep(mycolors, length.out = nb.cols)
+    
+    ggplot(breed_data, aes(x = "", y = breed_proportions_grouped, fill = Breed)) +
+      geom_bar(stat = "identity") +
+      labs(
+        x = NULL,
+        y = "Proportion",
+        title = "Proportion of Dog Breeds (Grouped)"
+      ) +
+      coord_flip() +  
+      scale_fill_manual(values = mycolors) +
+      theme_minimal() +
+      theme(
+        legend.position="bottom",
+        legend.direction="vertical",
+        legend.margin=margin())
   })
   
 }
