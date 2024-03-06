@@ -87,7 +87,6 @@ server <- function(input, output, session){
         mutate(percentage = (n / 14025) * 100)
       plot <- ggplot(SES_count, aes(x=" ", y=percentage, fill=SES))+
         geom_bar(width = 1, stat = "identity") +
-        scale_fill_discrete(name = "Annual Gross Income (AGI) Category") +
         labs(x = "Percent of each Socioeconomic Status in our dataset 
              (proxied by Annual Gross Income) ", y = "Percentage", caption = str_wrap(" For the SES category, 'Low' is under $50,000 AGI, 'Medium' is $50,000 - $100,000 AGI, and 'High' is over $100,000 AGI. As you can see, our dataset contains very few people who earn less than $50,000 annually. Subsequently, this sample is likely biased towards people who can afford Pet Licenses")) +
         theme(text = element_text(family = "Inconsolata", color = "black"),
